@@ -1,0 +1,7 @@
+node_modules/
+api/node_modules
+.firebaserc
+firebase.json
+.firebase
+public
+dist
