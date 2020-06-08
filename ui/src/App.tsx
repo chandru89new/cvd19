@@ -3,7 +3,12 @@ import ReactDom from "react-dom";
 import * as Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import axios from "axios";
-import moment from "moment";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useParams,
+} from "react-router-dom";
 
 const API_URL: string =
   process.env.NODE_ENV === "development"
@@ -235,6 +240,20 @@ function App() {
   let [isLog, setLogOption] = useState(false);
   let [loading, setLoading] = useState(false);
 
+  const changeCountry = (country: string) => {
+    const path = window.location.origin;
+    window.history.pushState(null, "", `${path}/${country}`);
+    setCountry(country);
+  };
+
+  useEffect(() => {
+    const countryFromPath =
+      window.location.pathname === "/"
+        ? "India"
+        : window.location.pathname.replace("/", "");
+    setCountry(countryFromPath || "India");
+  }, []);
+
   useEffect(() => {
     async function getData() {
       setLoading(true);
@@ -258,7 +277,7 @@ function App() {
             type: "line",
             name: "Confirmed",
             data: cases.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[1],
             ]),
           },
@@ -266,7 +285,7 @@ function App() {
             type: "line",
             name: "Recovered",
             data: recoveries.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[1],
             ]),
           },
@@ -274,7 +293,7 @@ function App() {
             type: "line",
             name: "Deaths",
             data: deaths.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[1],
             ]),
           },
@@ -292,7 +311,7 @@ function App() {
             type: "line",
             name: "Confirmed",
             data: cases.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[2],
             ]),
           },
@@ -300,7 +319,7 @@ function App() {
             type: "line",
             name: "Recovered",
             data: recoveries.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[2],
             ]),
           },
@@ -308,7 +327,7 @@ function App() {
             type: "line",
             name: "Deaths",
             data: deaths.data.map((d) => [
-              moment.utc(d[0]).valueOf(),
+              new Date(d[0]).getTime(),
               d[2],
             ]),
           },
@@ -324,7 +343,10 @@ function App() {
       <div>
         <div>
           Country:
-          <select onChange={(e) => setCountry(e.target.value)}>
+          <select
+            value={country}
+            onChange={(e) => changeCountry(e.target.value)}
+          >
             {countries.map((c) => (
               <option key={c} value={c}>
                 {c}

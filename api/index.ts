@@ -1,6 +1,7 @@
 const fs = require("fs");
 const d3 = require("d3-dsv");
 const R = require("ramda");
+const moment = require("moment");
 const file: string =
   "../../data/csse_covid_19_data/csse_covid_19_time_series";
 const casesFile: string = "time_series_covid19_confirmed_global.csv";
@@ -43,7 +44,7 @@ const formatData = (data: any) => {
     Object.entries,
     (a: any[]) =>
       a.map((d: string[], idx: number) => [
-        new Date(d[0]),
+        moment(d[0]).format("YYYY-MM-DD"),
         parseInt(d[1]),
         idx === 0
           ? parseInt(d[1])
