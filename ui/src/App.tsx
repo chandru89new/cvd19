@@ -3,12 +3,7 @@ import ReactDom from "react-dom";
 import * as Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import axios from "axios";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  useParams,
-} from "react-router-dom";
+import { clone } from "ramda"
 
 const API_URL: string =
   process.env.NODE_ENV === "development"
@@ -44,8 +39,8 @@ const hcOptions: Highcharts.Options = {
 };
 
 function App() {
-  let [totalOptions, setOptions] = useState({ ...hcOptions });
-  let [newOptions, setNewOptions] = useState({ ...hcOptions });
+  let [totalOptions, setOptions] = useState(clone({ ...hcOptions }));
+  let [newOptions, setNewOptions] = useState(clone({ ...hcOptions }));
   const countries = [
     "Afghanistan",
     "Albania",
@@ -236,23 +231,13 @@ function App() {
     "Tajikistan",
     "Lesotho",
   ];
-  let [country, setCountry] = useState(countries[0]);
+  let [country, setCountry] = useState("India");
   let [isLog, setLogOption] = useState(false);
   let [loading, setLoading] = useState(false);
 
   const changeCountry = (country: string) => {
-    const path = window.location.origin;
-    window.history.pushState(null, "", `${path}/${country}`);
     setCountry(country);
   };
-
-  useEffect(() => {
-    const countryFromPath =
-      window.location.pathname === "/"
-        ? "India"
-        : window.location.pathname.replace("/", "");
-    setCountry(countryFromPath || "India");
-  }, []);
 
   useEffect(() => {
     async function getData() {
@@ -336,7 +321,24 @@ function App() {
       setLoading(false);
     }
     getData();
-  }, [country, isLog]);
+  }, [country]);
+
+  useEffect(() => {
+    setOptions({
+      ...totalOptions,
+      yAxis: {
+        ...totalOptions.yAxis,
+        type: isLog ? "logarithmic" : "linear",
+      }
+    })
+    setNewOptions({
+      ...newOptions,
+      yAxis: {
+        ...newOptions.yAxis,
+        type: isLog ? "logarithmic" : "linear",
+      }
+    })
+  }, [isLog])
 
   return (
     <div className="App">
