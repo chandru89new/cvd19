@@ -10,10 +10,12 @@ const recoveredFile: string =
 const deadFile: string = "time_series_covid19_deaths_global.csv";
 const outputDir: string = "../";
 
-const filterByCountry = (country: string) => (data: any[]) => {
-  const filtered = data.filter(
-    (d) => d["Country/Region"] === country
-  );
+const filterByCountry = (country: string) => (
+  data: Array<{ [key: string]: string | number | null }>
+): { [key: string]: string | number | null } => {
+  const filtered: Array<{
+    [key: string]: string | number | null;
+  }> = data.filter((d) => d["Country/Region"] === country);
   if (filtered.length > 1) {
     return filtered.reduce((acc, curr) => {
       Object.keys(curr).forEach((key) => {
@@ -26,10 +28,10 @@ const filterByCountry = (country: string) => (data: any[]) => {
           ].includes(key)
         ) {
           acc[key] = acc[key]
-            ? acc[key] + Number(curr[key])
-            : Number(curr[key]);
+            ? Number(acc[key]) + Number(curr[key])
+            : Number(curr[key]) || 0;
         } else {
-          acc[key] = curr[key];
+          acc[key] = curr[key] || null;
         }
       });
       return acc;
